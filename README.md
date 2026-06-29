@@ -11,13 +11,13 @@
 | Plugin | 作用 |
 |--------|------|
 | [human-plan](./plugins/human-plan) | Human Plan 驱动的 AI 开发闭环：idea / design / scan 产出顶层需求，dev 执行前必须 plan-check + design-check，approve 后才写代码，audit 负责验收和返工 |
-| [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已确认的最终执行提示词，防止 AI 靠猜测开干 |
+| [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的最终 Prompt，防止 AI 靠猜测开干 |
 
 ## 特色
 
 - **Human Plan 是最终提示词**：Plan 面向人类审核，只保留需求、边界、取舍和验收，不写逐文件实现清单。
-- **Human Prompt 先对齐**：短需求先变成 Prompt Brief，AI 必须复述理解、列出证据和缺失问题，显式 confirm 后才交给执行 AI。
-- **硬确认门禁**：`confirm` 只确认 AI 对人类答复的理解，`approve` 才允许改源码，自然语言的“可以/按这个做”不算批准。
+- **Human Prompt 先对齐**：短需求先变成 Prompt Brief，AI 复述理解，用户 `confirm` 后再 `approve` 这段 Prompt。
+- **硬确认门禁**：自然语言的“可以/按这个做”不算批准；在 `human-plan` 中只有 approve 才允许改源码。
 - **不让需求漂移**：同一个事项始终沿用同一个 Plan Ref，所有 replan 都绑定版本、基线和未变范围。
 - **设计和架构双检查**：`plan-check` 看系统影响和代码融入，`design-check` 看交互、视觉、状态和响应式体验。
 - **批量扫描不重复烧 token**：`batch-code-scan` 一次扫完整项目，拆出多个独立 Plan，再用 worktree 并行推进。
