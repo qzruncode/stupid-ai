@@ -55,6 +55,14 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 
 安装后 11 个 skill 会按描述自动触发，也可以显式调用。插件命令使用 `/human-plan:<skill>` 命名空间。
 
+如果人类输入只有一句很短的需求或 bug 描述，先用 `human-prompt` 对齐最终提示词，再把已确认的 Prompt Brief 交给 `human-plan`：
+
+```
+/human-prompt:align 帮我实现收藏功能
+/human-prompt:align confirm docs/human-prompts/favorite-feature.md@v2
+/human-plan:idea 使用 docs/human-prompts/favorite-feature.md@v2 中的 Final Prompt 生成 Human Plan
+```
+
 ```
 /human-plan:idea 我觉得搜索体验不太对劲
 /human-plan:dev docs/human-plans/search-revamp.md@v2

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Human Prompt"
+  short_description: "Align a short human request into a confirmed execution prompt."
+  default_prompt: "/human-prompt:align 帮我把这个短需求对齐成可执行提示词："

@@ -1,0 +1,12 @@
+{
+  "name": "human-prompt",
+  "version": "0.1.0",
+  "description": "A prompt-alignment loop that turns short human requests into confirmed execution prompts before any AI implementation starts.",
+  "author": {
+    "name": "yejiawei",
+    "email": "2640199637@qq.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/qzruncode/stupid-ai",
+  "repository": "https://github.com/qzruncode/stupid-ai"
+}

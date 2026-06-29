@@ -19,6 +19,20 @@
       "repository": "https://github.com/qzruncode/stupid-ai",
       "license": "MIT",
       "keywords": ["workflow", "human-plan", "plan", "review", "audit", "code-scan"]
+    },
+    {
+      "name": "human-prompt",
+      "source": "./plugins/human-prompt",
+      "description": "A prompt-alignment loop: turn short human requests into confirmed execution prompts before any AI implementation starts.",
+      "version": "0.1.0",
+      "author": {
+        "name": "yejiawei",
+        "email": "2640199637@qq.com"
+      },
+      "homepage": "https://github.com/qzruncode/stupid-ai",
+      "repository": "https://github.com/qzruncode/stupid-ai",
+      "license": "MIT",
+      "keywords": ["workflow", "human-prompt", "prompt", "alignment", "requirements", "confirmation"]
     }
   ]
 }

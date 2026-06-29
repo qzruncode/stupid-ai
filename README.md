@@ -1,20 +1,22 @@
 # stupid-ai
 
-> A Claude Code plugin marketplace for Human Plan gated AI development.
+> A Claude Code plugin marketplace for Human Prompt and Human Plan gated AI development.
 
-`stupid-ai` 不追求让 AI 一口气把代码写完，而是把 AI 开发拆成可审核、可回滚、可复用的 Human Plan 流程。每次动代码前，AI 必须先把需求说清楚；每次有疑问，AI 必须先复述理解并等人确认；每次实现后，再用 audit 把代码拉回已批准的需求。
+`stupid-ai` 不追求让 AI 一口气把代码写完，而是把 AI 开发拆成可审核、可回滚、可复用的 Human Prompt / Human Plan 流程。短提示词先被对齐成最终执行提示词；动代码前，AI 必须先把需求说清楚；每次有疑问，AI 必须先复述理解并等人确认；每次实现后，再用 audit 把代码拉回已批准的需求。
 
-它解决的是纯 AI 项目里最常见的几个坑：需求漂移、越改越乱、直接动代码、重复扫描浪费 token、前端越改越丑、多个修复互相串分支。
+它解决的是纯 AI 项目里最常见的几个坑：短提示词没对齐、需求漂移、越改越乱、直接动代码、重复扫描浪费 token、前端越改越丑、多个修复互相串分支。
 
 ## Plugins
 
 | Plugin | 作用 |
 |--------|------|
 | [human-plan](./plugins/human-plan) | Human Plan 驱动的 AI 开发闭环：idea / design / scan 产出顶层需求，dev 执行前必须 plan-check + design-check，approve 后才写代码，audit 负责验收和返工 |
+| [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已确认的最终执行提示词，防止 AI 靠猜测开干 |
 
 ## 特色
 
 - **Human Plan 是最终提示词**：Plan 面向人类审核，只保留需求、边界、取舍和验收，不写逐文件实现清单。
+- **Human Prompt 先对齐**：短需求先变成 Prompt Brief，AI 必须复述理解、列出证据和缺失问题，显式 confirm 后才交给执行 AI。
 - **硬确认门禁**：`confirm` 只确认 AI 对人类答复的理解，`approve` 才允许改源码，自然语言的“可以/按这个做”不算批准。
 - **不让需求漂移**：同一个事项始终沿用同一个 Plan Ref，所有 replan 都绑定版本、基线和未变范围。
 - **设计和架构双检查**：`plan-check` 看系统影响和代码融入，`design-check` 看交互、视觉、状态和响应式体验。
@@ -31,6 +33,7 @@
 
 ```
 /plugin install human-plan@stupid-ai
+/plugin install human-prompt@stupid-ai
 ```
 
 本地开发/测试：
@@ -38,6 +41,7 @@
 ```
 /plugin marketplace add /path/to/stupid-ai
 /plugin install human-plan@stupid-ai
+/plugin install human-prompt@stupid-ai
 ```
 
 ## 结构
@@ -47,7 +51,12 @@ stupid-ai/                              # marketplace 仓库
 ├── .claude-plugin/
 │   └── marketplace.json                # marketplace 清单，列出所有 plugin
 ├── plugins/
-│   └── human-plan/                     # 单个 plugin（有自己的 README）
+│   ├── human-plan/                     # Human Plan 闭环 plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── skills/
+│   │   └── README.md
+│   └── human-prompt/                   # Human Prompt 对齐 plugin
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       ├── skills/
