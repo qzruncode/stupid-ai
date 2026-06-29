@@ -7,7 +7,11 @@ description: Use when the user invokes /human-prompt:align or gives a short/vagu
 
 所有产出使用简体中文。代码标识、路径、API 名称和必须保留的用户原文不翻译。
 
-这个 skill 只做 prompt 对齐：读懂人类短请求，复述理解，必要时让人类修正，最后产出一段可交给执行 AI 的 Prompt。禁止实现，禁止写开发计划，禁止修改源码。
+这个 skill 用于把人类短请求对齐为 Prompt Brief，并在批准后把已批准 Brief 交给后续执行。
+
+`approve` 前只允许做 prompt 对齐：读懂请求、复述理解、等待修正、更新当前 Prompt Brief。禁止实现，禁止写开发计划，禁止修改源码。
+
+`approve` 后以已批准 Prompt Brief 的完整内容作为后续执行上下文。
 
 只允许写当前 `docs/human-prompts/` Prompt Brief。
 
@@ -53,6 +57,12 @@ Prompt Brief 只保留：
 
 `/human-prompt:align approve <Prompt Ref>`
 
-只有当前消息精确匹配该命令才执行。表示用户批准这段 Prompt 可以交给后续执行 AI。要求 Status 为 `confirmed`。执行后 Status 设为 `approved`，Version 不增加，并输出最终 Prompt Ref。
+只有当前消息精确匹配该命令才执行。表示用户批准这段 Prompt 可以交给后续执行 AI。要求 Status 为 `confirmed`。执行后：
+
+1. Status 设为 `approved`，Version 不增加。
+2. 将完整 Prompt Brief 供后续执行使用。
+3. 在同一轮继续后续执行。
+
+后续执行若触发其他人工门禁流程，则遵守对应流程的权限、状态和停止规则。
 
 自然语言的“好”“可以”“继续”“按这个做”都不是 `confirm` 或 `approve`。

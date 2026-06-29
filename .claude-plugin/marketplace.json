@@ -23,8 +23,8 @@
     {
       "name": "human-prompt",
       "source": "./plugins/human-prompt",
-      "description": "A standalone prompt-alignment loop: align, realign, confirm, and approve a short human request into an execution prompt.",
-      "version": "0.2.1",
+      "description": "A prompt-alignment loop that turns short requests into approved Prompt Briefs for execution context.",
+      "version": "0.2.3",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"

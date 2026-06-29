@@ -4,19 +4,19 @@
 
 ## 这是什么
 
-`human-prompt` 解决的是“人类提示词太短，AI 没理解就开干”的问题。它不做实现，也不产出开发计划；它只把人类的一句话变成一段可确认、可批准的最终 Prompt。
+`human-prompt` 解决的是“人类提示词太短，AI 没理解就开干”的问题。它先把人类的一句话变成一份可确认、可批准的 Prompt Brief，再用已批准 Brief 作为后续执行上下文。
 
 核心路线：
 
 ```
-align -> realign -> confirm -> approve
+align -> realign -> confirm -> approve -> continue
 ```
 
 ## Skills
 
 | Skill | 作用 |
 |-------|------|
-| `/human-prompt:align` | 把短需求、短 bug 描述或模糊任务闭环成已批准的最终 Prompt |
+| `/human-prompt:align` | 把短需求、短问题描述或模糊任务闭环成已批准的 Prompt Brief |
 
 ## 使用
 
@@ -43,9 +43,9 @@ align -> realign -> confirm -> approve
 
 ## 约定
 
-- Prompt Brief 写在项目内 `docs/human-prompts/` 下，只保留 `Human`、`Understanding`、`Need Human`、`Prompt`
+- Prompt Brief 写在项目内 `docs/human-prompts/` 下，并保持固定模板
 - Prompt Ref 格式：`<Prompt Brief 文件路径>@v<Version>`
-- `confirm` 确认 AI 理解正确，`approve` 批准 Prompt 可以交给后续执行 AI
+- `confirm` 确认 AI 理解正确，`approve` 批准 Prompt Brief 作为后续执行上下文
 - 自然语言的“好/可以/继续/按这个做”不算 `confirm` 或 `approve`
 - 文件清单、代码片段、调研证据、实现步骤和长篇验收不要写进 Prompt Brief
 
