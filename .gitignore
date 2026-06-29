@@ -1,0 +1,15 @@
+# Local plugin settings (per-project overrides)
+.claude/*.local.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
