@@ -1,6 +1,6 @@
 {
   "name": "human-prompt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A standalone prompt-alignment loop: align, realign, confirm, and approve a short human request into an execution prompt.",
   "author": {
     "name": "yejiawei",
