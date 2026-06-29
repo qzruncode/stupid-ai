@@ -24,7 +24,7 @@
 ## 安装 marketplace
 
 ```
-/plugin marketplace add yejiawei/stupid-ai
+/plugin marketplace add qzruncode/stupid-ai
 ```
 
 然后装其中的 plugin：

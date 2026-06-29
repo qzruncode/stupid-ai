@@ -40,7 +40,7 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 先加 marketplace，再装本 plugin：
 
 ```
-/plugin marketplace add yejiawei/stupid-ai
+/plugin marketplace add qzruncode/stupid-ai
 /plugin install human-plan@stupid-ai
 ```
 
