@@ -1,14 +1,25 @@
 # stupid-ai
 
-> A Claude Code plugin marketplace. We trust LLMs less than we trust a written plan a human can read.
+> A Claude Code plugin marketplace for Human Plan gated AI development.
 
-为什么叫"愚蠢 AI"？因为我们相信：与其信任 LLM 一次到位，不如把开发流程切成一个个**人类可审核的 Plan**，让 AI 在每一步都先写计划、等人确认、再动手。AI 越"蠢"，流程越稳。
+`stupid-ai` 不追求让 AI 一口气把代码写完，而是把 AI 开发拆成可审核、可回滚、可复用的 Human Plan 流程。每次动代码前，AI 必须先把需求说清楚；每次有疑问，AI 必须先复述理解并等人确认；每次实现后，再用 audit 把代码拉回已批准的需求。
+
+它解决的是纯 AI 项目里最常见的几个坑：需求漂移、越改越乱、直接动代码、重复扫描浪费 token、前端越改越丑、多个修复互相串分支。
 
 ## Plugins
 
 | Plugin | 作用 |
 |--------|------|
-| [human-plan-flow](./plugins/human-plan-flow) | Human-Plan-driven 开发工作流：idea → design → design-check → plan-check → worktree → dev → bug-fix → audit，加 arch-check / code-scan / batch-code-scan 持续健康度扫描 |
+| [human-plan](./plugins/human-plan) | Human Plan 驱动的 AI 开发闭环：idea / design / scan 产出顶层需求，dev 执行前必须 plan-check + design-check，approve 后才写代码，audit 负责验收和返工 |
+
+## 特色
+
+- **Human Plan 是最终提示词**：Plan 面向人类审核，只保留需求、边界、取舍和验收，不写逐文件实现清单。
+- **硬确认门禁**：`confirm` 只确认 AI 对人类答复的理解，`approve` 才允许改源码，自然语言的“可以/按这个做”不算批准。
+- **不让需求漂移**：同一个事项始终沿用同一个 Plan Ref，所有 replan 都绑定版本、基线和未变范围。
+- **设计和架构双检查**：`plan-check` 看系统影响和代码融入，`design-check` 看交互、视觉、状态和响应式体验。
+- **批量扫描不重复烧 token**：`batch-code-scan` 一次扫完整项目，拆出多个独立 Plan，再用 worktree 并行推进。
+- **一个 Plan 一个 worktree**：每个 Plan 创建独立分支和工作区，避免多个 AI 会话互相污染。
 
 ## 安装 marketplace
 
@@ -19,14 +30,14 @@
 然后装其中的 plugin：
 
 ```
-/plugin install human-plan-flow@stupid-ai
+/plugin install human-plan@stupid-ai
 ```
 
 本地开发/测试：
 
 ```
 /plugin marketplace add /path/to/stupid-ai
-/plugin install human-plan-flow@stupid-ai
+/plugin install human-plan@stupid-ai
 ```
 
 ## 结构
@@ -36,7 +47,7 @@ stupid-ai/                              # marketplace 仓库
 ├── .claude-plugin/
 │   └── marketplace.json                # marketplace 清单，列出所有 plugin
 ├── plugins/
-│   └── human-plan-flow/                # 单个 plugin（有自己的 README）
+│   └── human-plan/                     # 单个 plugin（有自己的 README）
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       ├── skills/
@@ -57,7 +68,7 @@ stupid-ai/                              # marketplace 仓库
    }
    ```
 3. 跑 `claude plugin validate .` 确认 marketplace 通过
-4. 给新 plugin 写自己的 `README.md`（参考 `plugins/human-plan-flow/README.md`）
+4. 给新 plugin 写自己的 `README.md`（参考 `plugins/human-plan/README.md`）
 
 ## License
 

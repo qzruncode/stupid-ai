@@ -1,0 +1,4 @@
+interface:
+  display_name: "Worktree"
+  short_description: "Create one worktree for one Plan Ref."
+  default_prompt: "/human-plan:worktree <Plan Ref>"

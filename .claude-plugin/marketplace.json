@@ -7,9 +7,9 @@
   "description": "stupid-ai — a marketplace for Human-Plan-driven Claude Code workflows. We trust LLMs less than we trust a written plan a human can read.",
   "plugins": [
     {
-      "name": "human-plan-flow",
-      "source": "./plugins/human-plan-flow",
-      "description": "A Human-Plan-driven development workflow: idea → design → design-check → plan-check → worktree → dev → bug-fix → audit, plus arch-check / code-scan / batch-code-scan for continuous codebase health.",
+      "name": "human-plan",
+      "source": "./plugins/human-plan",
+      "description": "A Human Plan gated AI development workflow: align requirements, check architecture and design, approve before code, audit after implementation, with code-scan / batch-code-scan / arch-check for project health.",
       "version": "0.1.0",
       "author": {
         "name": "yejiawei",
