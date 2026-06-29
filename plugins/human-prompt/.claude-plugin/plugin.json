@@ -1,6 +1,6 @@
 {
   "name": "human-prompt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A prompt-alignment loop that turns short human requests into confirmed execution prompts before any AI implementation starts.",
   "author": {
     "name": "yejiawei",
