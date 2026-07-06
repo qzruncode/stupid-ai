@@ -10,7 +10,7 @@
       "name": "human-plan",
       "source": "./plugins/human-plan",
       "description": "A Human Plan gated AI development workflow: align requirements, check architecture and design, approve before code, audit after implementation, with code-scan / batch-code-scan / arch-check for project health.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"

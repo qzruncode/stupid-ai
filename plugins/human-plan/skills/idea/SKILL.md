@@ -5,61 +5,52 @@ description: Use when the user invokes /human-plan:idea or has a fuzzy thought, 
 
 # Idea
 
-所有产出使用简体中文。代码标识、路径、API 名称和必须保留的用户原文不翻译。
+先读取 `../../shared/human-plan-protocol.md`，并遵守共享 Human Plan 协议。
 
-只允许研究需求并写入 `docs/human-plans/` 下的当前 Human Plan，禁止修改其他项目文件。
+`idea` 负责把模糊想法变成可判断、可讨论、可交给后续开发的顶层需求。它不是需求记录员；要主动补全问题结构，识别真正目标，压缩空泛表达，让人类能快速确认“是不是要做这个”。
 
-## Plan 约束
+## 工作方法
 
-- 一个事项始终使用同一个 Plan 文件和 Plan ID。
-- Plan 只保留当前方案与简短版本摘要，不累计完整历史。
-- 内容面向人类审核，不写代码、逐文件改动、测试命令或 AI 执行步骤。
-- 固定字段为：Plan ID、Version、Owner Skill、Status、Frontend Impact、Requirement Baseline、Confirmed Decisions、Current Plan、Changes Since Last Plan、Unchanged Scope、Needs Reconfirmation、Review Status、Delivery Status、Revision Notes。
-- Human Plan 是人类与 AI 的需求对齐凭据，不是技术计划、需求文档、聊天总结或执行步骤。
-- 固定字段必须保留；不适用字段写 `无`，不要为了填字段展开解释。
-- Plan 只回答：为什么做、做成什么样、明确不做什么、怎么验收。
-- Requirement Baseline 写人类要解决的问题和目标结果；Confirmed Decisions 写人类已确认的业务/产品/体验决策；Current Plan 写 AI 准备交付的需求级方案；Unchanged Scope 写明确不做的事。
-- Current Plan 就是最终需求提示词：loop 多轮后，人类和 AI 已达成一致，AI 可按它执行。
-- 禁止写文件路径、函数名、行号、内部实现步骤、测试命令或技术排查过程，除非这些本身就是用户要审核的需求。
-- AI 后续执行时可自行推导技术步骤；Human Plan 只保存双方对齐后的需求契约。
-- Changes Since Last Plan 只写本轮需求变化一句话，不保留多轮历史。
-- Needs Reconfirmation 只写当前未解决的人类决策问题，不写分析过程或完整 replan 草稿。
-- Review Status、Delivery Status 和 Revision Notes 只写短状态，不写检查报告。
-- 聊天输出只展示短摘要、真实 Plan Ref 和下一步命令，不重复完整 Plan。
-- Owner Skill 为 `idea`；Status 只使用 `draft` 或 `reconfirmation-pending`；Frontend Impact 只使用 `yes`、`no` 或 `unknown`。
-- Plan Ref 固定为 `<Plan 文件路径>@v<Version>`。引用版本不一致时停止且不写入，并返回当前 Plan Ref。
-- 任一命令的 Owner、Status 或前置条件不满足时停止且不写入，并根据当前 Plan 返回合法下一步。
+- 先提炼用户原话中的真实问题、目标用户、使用场景、期望结果和约束，不把一句愿望直接改写成 Plan。
+- 区分问题、方案、偏好和猜测：问题进入 Requirement Baseline，已明确取舍进入 Confirmed Decisions，AI 的需求级建议进入 Current Plan。
+- 主动收敛最小可落地范围：优先定义一个可验收结果，而不是展开完整产品蓝图。
+- 判断需求类型：新能力、行为调整、体验优化、流程治理、技术债清理、数据口径变更或风险控制。
+- 找出会影响方向的人类决策：目标用户是谁、业务规则怎么定、是否允许改变现有流程、是否需要兼容旧行为。
+- 对 AI 可自行判断的内容直接给出建议，不把普通产品判断塞进 Needs Reconfirmation。
+- 读取必要的本地代码或文档来确认现有入口、术语、能力边界和可见行为；不要在不了解项目事实时编造产品结构。
 
-## Reconfirmation
+## 好的 Idea Plan
 
-Needs Reconfirmation 非空时，`replan` 只能准备待提交 Replan，不能直接更新正式 Plan：
+- 人类一眼能看出：为什么要做、为谁做、做完应看到什么变化。
+- Current Plan 是一段可执行的需求提示词，而不是用户聊天总结。
+- 范围足够小，可以进入 `/human-plan:dev`，但保留必要的业务取舍。
+- 验收结果面向可观察行为，不写“代码完成”“测试通过”这类空泛结果。
+- Unchanged Scope 明确排除会诱发膨胀的相邻事项。
 
-- 使用当前消息中的人类答复，不从更早对话猜测。
-- 在 Needs Reconfirmation 中用短句保留人类问题、AI 理解和拟变更点。
-- 不清除确认项，不修改正式 Plan，不增加 Version。
-- Status 设为 `reconfirmation-pending`，只展示待提交 Replan 的理解摘要和拟变更点后停止。
+## 避免
 
-当前消息没有可用于对应确认项的答复时，不写入任何内容，只展示待确认事项并要求用户在 `/human-plan:idea replan <当前 Plan Ref>` 后补充答复。
-
-理解不正确时继续 `/human-plan:idea replan <当前 Plan Ref>` 修正待提交 Replan。只有精确的 `/human-plan:idea confirm <当前 Plan Ref>` 才能提交；自然语言肯定不算 confirm。未经 confirm，不得进入 `/human-plan:dev`。
+- 不把模糊想法包装成宏大的长期规划。
+- 不替用户发明业务规则、商业目标或合规口径。
+- 不写实现步骤、文件清单、数据库表、接口字段或测试命令，除非它们就是用户要确认的需求契约。
+- 不把 Needs Reconfirmation 写成一串访谈问题；只保留当前阻塞进入开发的决策。
 
 ## `/human-plan:idea xxx`
 
-创建简洁 Human Plan，把模糊想法整理成一段可执行的顶层需求提示词，并明确目标用户、核心问题、预期结果、关键取舍、最小范围和验收结果。设置 Version 为 1、Status 为 `draft`。
+创建 Version 1 的 Human Plan。Owner Skill 设为 `idea`，Status 设为 `draft`；如果存在阻塞决策，Status 仍为 `draft`，并在 Needs Reconfirmation 中写明。
 
-只展示短摘要、Status、Needs Reconfirmation、真实 Plan Ref 和下一步命令。若有待确认事项，下一步返回带真实 Plan Ref 的 `/human-plan:idea replan`；否则同时说明可 `/human-plan:dev <当前 Plan Ref>` 或继续 `/human-plan:idea replan <当前 Plan Ref>`。随后停止。
+输出短摘要、Status、Needs Reconfirmation、真实 Plan Ref 和下一步命令。无待确认事项时，下一步同时给出 `/human-plan:dev <当前 Plan Ref>` 和 `/human-plan:idea replan <当前 Plan Ref>`；有待确认事项时，只给出 `/human-plan:idea replan <当前 Plan Ref>`。
 
 ## `/human-plan:idea replan [Plan Ref]`
 
 要求 Owner Skill 为 `idea`，Status 为 `draft` 或 `reconfirmation-pending`。
 
-- Needs Reconfirmation 为空：按人类反馈更新当前方案，增加 Version，填写 Changes Since Last Plan，Status 保持 `draft`。
-- Needs Reconfirmation 非空：按 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
+- Needs Reconfirmation 为空：按人类反馈更新需求方向、范围或验收结果，增加 Version，Status 保持 `draft`。
+- Needs Reconfirmation 非空：按共享 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
 
-展示短摘要、真实 Plan Ref 和合法下一步后停止。
+输出短摘要、真实 Plan Ref 和合法下一步后停止。
 
 ## `/human-plan:idea confirm [Plan Ref]`
 
 仅当当前消息精确为 `/human-plan:idea confirm <当前 Plan Ref>` 时执行。要求 Owner Skill 为 `idea`、Status 为 `reconfirmation-pending`，并存在对应当前 Version 的待提交 Replan。
 
-提交待提交 Replan，清除已解决的确认项，增加 Version并记录变化。仍有未解决项时 Status 设为 `draft`，下一步继续 `/human-plan:idea replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，下一步进入 `/human-plan:dev <新 Plan Ref>`。confirm 只提交 Replan，不代表开发批准。
+提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化。仍有未解决项时 Status 设为 `draft`，下一步继续 `/human-plan:idea replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，下一步进入 `/human-plan:dev <新 Plan Ref>`。

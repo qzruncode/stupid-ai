@@ -1,0 +1,69 @@
+# Human Plan Protocol
+
+所有 `human-plan` skill 都遵守本协议。各 skill 的 `SKILL.md` 只写本 skill 的专业职责、判断方法和命令差异；状态机、字段和确认规则以本文件为准。
+
+## 输出语言
+
+- 所有产出使用简体中文。
+- 代码标识、路径、API 名称、组件名、命令、错误信息、仓库名、链接和必须保留的用户原文不翻译。
+- 聊天输出只展示结论摘要、真实 Plan Ref 和下一步命令，不重复完整 Plan。
+
+## Plan 文件
+
+- Human Plan 写入当前项目的 `docs/human-plans/`。
+- Plan Ref 固定为 `<Plan 文件路径>@v<Version>`。
+- 引用版本和当前 Version 不一致时停止且不写入，并返回当前真实 Plan Ref。
+- 一个事项始终沿用同一个 Plan 文件和 Plan ID；只有无 Plan Ref 的新事项才创建文件。
+- 固定字段必须保留：Plan ID、Version、Owner Skill、Status、Frontend Impact、Requirement Baseline、Confirmed Decisions、Current Plan、Changes Since Last Plan、Unchanged Scope、Needs Reconfirmation、Review Status、Delivery Status、Revision Notes。
+- 不适用字段写 `无`；短状态字段不要展开成报告。
+- Human Plan 是人类与 AI 的需求对齐凭据，不是聊天总结、调研报告、设计规范全文、审计报告、技术方案、任务清单或实现说明。
+
+## Plan 内容标准
+
+- Requirement Baseline 写人类要解决的问题、目标结果和已接受的来源基线。
+- Confirmed Decisions 写人类已确认的业务、产品、体验、技术契约或修复取舍。
+- Current Plan 写最终需求提示词：人类和 AI 已对齐后，AI 可按它执行。
+- Unchanged Scope 写明确不做的事、不能顺手扩大的边界和兼容要求。
+- Needs Reconfirmation 只写当前未解决的人类决策问题，不写分析过程或 replan 草稿。
+- Changes Since Last Plan 只写本轮需求变化一句话，不保留多轮历史。
+- Review Status、Delivery Status 和 Revision Notes 只写当前 Version 的短状态。
+- Plan 只回答：为什么做、做成什么样、明确不做什么、怎么验收。
+- 默认不写文件路径、函数名、行号、内部实现步骤、测试命令、搜索过程或技术排查过程；只有它们本身是用户要审核的契约时才保留。
+- AI 后续执行时可自行推导技术步骤；这些步骤不写回 Human Plan，除非出现新的需求决策。
+
+## 权限
+
+- 除 `worktree` 外，未进入精确 `approve` 命令前，只允许读取项目并写入当前 Human Plan 或批次索引。
+- `idea`、`design`、`code-scan`、`batch-code-scan`、`arch-check` 只产出 draft Plan，不修改源码。
+- `dev`、`bug-fix`、`audit` 只有当前消息精确为对应 `approve <当前 Plan Ref>` 时才允许修改源码。
+- 自然语言中的“好”“可以”“按这个做”“直接改”“修复”“实现”都不是 approve 或 confirm。
+- 输出 Plan、检查结论、worktree 信息或审计结论后立即停止，不自动调用下一技能。
+
+## Reconfirmation
+
+Needs Reconfirmation 非空时，`replan` 只能准备待提交 Replan，不能直接更新正式 Plan：
+
+- 使用当前消息中的人类答复，不从更早对话猜测。
+- 在 Needs Reconfirmation 中用短句保留人类问题、AI 理解和拟变更点。
+- 不清除确认项，不修改正式 Plan，不增加 Version，不恢复检查状态。
+- Status 设为 `reconfirmation-pending`，只展示待提交 Replan 的理解摘要和拟变更点后停止。
+
+当前消息没有可用于对应确认项的答复时，不写入任何内容，只展示待确认事项，并要求用户用当前 Owner 的 `replan <当前 Plan Ref>` 补充答复。
+
+只有当前消息精确为对应 Owner 的 `confirm <当前 Plan Ref>` 才能提交待提交 Replan。confirm 只提交 Replan，不代表开发、修复或返工批准。
+
+## Owner 与状态
+
+- `idea`、`code-scan`、`batch-code-scan`、`arch-check`：Status 只使用 `draft` 或 `reconfirmation-pending`。
+- `design`：Status 只使用 `review-pending`、`replan-required`、`reconfirmation-pending` 或 `draft`。
+- `dev`、`bug-fix`：Status 只使用 `review-pending`、`replan-required`、`reconfirmation-pending`、`ready-for-approval` 或 `implemented`。
+- `audit`：返工阶段 Status 只使用 `audit-fixes-required`、`review-pending`、`replan-required`、`reconfirmation-pending`、`ready-for-approval`、`implemented` 或 `complete`。
+- Frontend Impact 只使用 `yes`、`no` 或 `unknown`；`design` 固定为 `yes`。
+- 任一命令的 Owner、Status、Version 或前置条件不满足时停止且不写入，并根据当前 Plan 返回合法下一步。
+
+## 检查与批准
+
+- `plan-check` 通过后：Frontend Impact 为 `yes` 或 `unknown` 时进入 `design-check`；为 `no` 时记录 design-check 不适用并进入对应 Owner 的 `approve`。
+- `design-check` 通过后：Owner 为 `design` 时 Status 设为 `draft` 并进入 `dev`；Owner 为 `dev`、`bug-fix` 或 `audit` 时 Status 设为 `ready-for-approval` 并进入对应 `approve`。
+- `approve` 前必须满足：Owner 与命令匹配、Status 为 `ready-for-approval`、Needs Reconfirmation 为空、当前 Version 的 plan-check 已通过、Frontend Impact 已明确，且前端影响为 `yes` 时当前 Version 的 design-check 已通过。
+- `approve` 执行前再次核对 Requirement Baseline、Current Plan 和 Unchanged Scope。若实现需要新增决策、改变基线或扩大范围，停止写入，把决策点写入 Needs Reconfirmation，Status 设为 `replan-required`，返回 Owner 的 `replan`。

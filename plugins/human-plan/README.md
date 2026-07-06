@@ -19,6 +19,8 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 
 所有下一步都由当前 Plan 的 Owner Skill、Status、Needs Reconfirmation 和 Version 决定；任一步有待确认事项，都必须回到 Owner Skill replan，再由用户显式 confirm。
 
+插件内部把共享状态机放在 `shared/human-plan-protocol.md`；每个 skill 的 `SKILL.md` 只保留自己的专业职责、判断方法、产出标准和命令差异，避免把 Human Plan 闭环写成空壳流程。
+
 ## Skills
 
 | 类型 | Skill | 作用 |
@@ -93,6 +95,8 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 plugins/human-plan/
 ├── .claude-plugin/
 │   └── plugin.json
+├── shared/
+│   └── human-plan-protocol.md
 ├── skills/
 │   ├── idea/           { SKILL.md, agents/openai.yaml }
 │   ├── design/         { SKILL.md, agents/openai.yaml }
