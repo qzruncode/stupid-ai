@@ -9,8 +9,8 @@
     {
       "name": "human-plan",
       "source": "./plugins/human-plan",
-      "description": "An auto-looping Human Plan workflow: turn one request into a checked plan, stop at confirm/approve gates, implement after approval, and audit the result.",
-      "version": "0.2.0",
+      "description": "An auto-looping Human Plan workflow: run batch scan loops, stop at confirm/approve gates, track tokens, implement after approval, and audit the result.",
+      "version": "0.3.0",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"
@@ -18,7 +18,7 @@
       "homepage": "https://github.com/qzruncode/stupid-ai",
       "repository": "https://github.com/qzruncode/stupid-ai",
       "license": "MIT",
-      "keywords": ["workflow", "human-plan", "plan", "review", "audit", "code-scan"]
+      "keywords": ["workflow", "human-plan", "plan", "review", "audit", "code-scan", "loop"]
     },
     {
       "name": "human-prompt",

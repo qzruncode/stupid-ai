@@ -2,13 +2,14 @@
 
 > Claude Code plugins for AI work that should not drift: auto-loop plans, explicit human gates, and auditable execution.
 
-`stupid-ai` 不追求让 AI “凭感觉一直写”。它把 Claude Code 的开发过程变成一条可读、可停、可审计的闭环：用户给一句诉求，插件自动整理 Human Plan、检查架构和设计、停在人工 approve gate；用户批准后才改源码，改完再自动 audit。
+`stupid-ai` 不追求让 AI “凭感觉一直写”。它把 Claude Code 的开发过程变成一条可读、可停、可审计的闭环：用户给一句诉求，插件自动整理 Human Plan、检查架构和设计、停在人工 approve gate；也可以启动后台 batch loop，让 AI 按次数上限扫描、推进、记账和挂 gate。
 
 它解决的是纯 AI 项目里最常见的几个坑：短提示词没对齐、需求漂移、越改越乱、直接动代码、重复扫描浪费 token、前端越改越丑、多个修复互相串分支。
 
 ## Why Star
 
 - **One request, one loop**：不用复制一串命令，`human-plan` 会自动推进到下一个安全阶段。
+- **One batch, many plans**：后台 loop 默认先 `batch-code-scan`，再逐个处理 Plan，不反复全量扫描项目。
 - **Only humans approve risk**：自然语言的“可以/按这个做”不算批准，只有精确 `approve` 才能改源码。
 - **Plans stay readable**：Human Plan 只写需求、边界、取舍和验收，不把人类拖进逐文件实现清单。
 - **Checks before code, audit after code**：动手前做 `plan-check` / `design-check`，实现后用 `audit` 拉回已批准需求。
@@ -18,7 +19,7 @@
 
 | Plugin | 作用 |
 |--------|------|
-| [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：idea / design / scan 产出顶层需求，dev 自动跑 plan-check + design-check，到 approve gate 停住，批准后实现并 audit |
+| [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：单诉求自动到 approve gate，后台 batch loop 可按 tick 上限扫描、推进、记录 gate 和 token |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
 
 ## Human Plan Loop
@@ -32,6 +33,12 @@ one request
   -> implementation
   -> audit
   -> complete or rework gate
+
+loop start 5
+  -> batch-code-scan once
+  -> process plans one by one
+  -> gates / changelog / token-ledger
+  -> stop after 5 ticks
 ```
 
 ## 特色
@@ -64,6 +71,12 @@ one request
 
 # 插件自动推进到 approve gate 后，再由用户显式批准：
 /human-plan:dev approve docs/human-plans/search-revamp.md@v3
+```
+
+后台循环：
+
+```bash
+node plugins/human-plan/loop/runner.js start 5
 ```
 
 本地开发/测试：

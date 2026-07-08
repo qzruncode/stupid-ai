@@ -1,0 +1,4 @@
+interface:
+  display_name: "Loop"
+  short_description: "Run the Human Plan batch loop with tick and token limits."
+  default_prompt: "/human-plan:loop start 3"
