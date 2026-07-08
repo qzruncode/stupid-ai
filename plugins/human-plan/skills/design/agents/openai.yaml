@@ -1,4 +1,4 @@
 interface:
   display_name: "Design"
-  short_description: "Create senior UX/UI experience briefs."
-  default_prompt: "/human-plan:design 基于当前项目需求，为这个页面或交互生成资深 UX/UI 体验 Human Plan："
+  short_description: "Create UX/UI briefs and auto-loop to implementation approval."
+  default_prompt: "/human-plan:design 基于当前项目需求，为这个页面或交互生成体验 Plan，并自动推进到需要我 approve 的地方："

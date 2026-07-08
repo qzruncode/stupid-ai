@@ -23,7 +23,7 @@ description: Use when the user invokes /human-plan:dev with a requirement or an 
 - 精确 `/human-plan:dev approve <当前 Plan Ref>` 后才允许修改源码。
 - 实现前再次核对 Requirement Baseline、Current Plan 和 Unchanged Scope。
 - 如果实现中发现需要新增决策、改变基线或扩大范围，停止写入并按共享协议回到 replan。
-- 完成后在 Delivery Status 记录当前 Version 的 approval、implementation 和验证结果，Status 设为 `implemented`，下一步返回 `/human-plan:audit <当前 Plan Ref>`。
+- 完成后在 Delivery Status 记录当前 Version 的 approval、implementation 和验证结果，Status 设为 `implemented`，直接读取 `../audit/SKILL.md` 并以 `/human-plan:audit <当前 Plan Ref>` 继续推进。
 
 ## `/human-plan:dev xxx`
 
@@ -33,7 +33,7 @@ description: Use when the user invokes /human-plan:dev with a requirement or an 
 
 来自 `design` 时，要求 Status 为 `draft`、Needs Reconfirmation 为空，且当前 Version 的 design-check 已通过；沿用文件和 Plan ID，增加 Version。执行本命令表示人类接受已审核的设计基线。
 
-设置 Owner Skill 为 `dev`，重置当前版本的 Review Status 和 Delivery Status。Needs Reconfirmation 为空时 Status 设为 `review-pending`，下一步只允许 `/human-plan:plan-check <当前 Plan Ref>`；非空时 Status 设为 `replan-required`，下一步只允许 `/human-plan:dev replan <当前 Plan Ref>`。
+设置 Owner Skill 为 `dev`，重置当前版本的 Review Status 和 Delivery Status。Needs Reconfirmation 为空时 Status 设为 `review-pending`，直接读取 `../plan-check/SKILL.md` 并以 `/human-plan:plan-check <当前 Plan Ref>` 继续推进；非空时 Status 设为 `replan-required`，停止并只允许 `/human-plan:dev replan <当前 Plan Ref>`。
 
 ## `/human-plan:dev replan [Plan Ref]`
 
@@ -42,14 +42,14 @@ description: Use when the user invokes /human-plan:dev with a requirement or an 
 - Needs Reconfirmation 为空：只调整需要修改的 Plan 内容，增加 Version，记录变化，重置 Review Status 和 Delivery Status，Status 设为 `review-pending`。
 - Needs Reconfirmation 非空：按共享 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
 
-不得借 replan 扩大 Requirement Baseline。展示短摘要、真实 Plan Ref 和合法下一步后停止。
+不得借 replan 扩大 Requirement Baseline。展示短摘要和真实 Plan Ref。Needs Reconfirmation 为空时继续自动进入 `/human-plan:plan-check <当前 Plan Ref>`；Needs Reconfirmation 非空时按共享协议停止在 reconfirmation gate。
 
 ## `/human-plan:dev confirm [Plan Ref]`
 
 仅当当前消息精确为 `/human-plan:dev confirm <当前 Plan Ref>` 时执行。要求 Owner Skill 为 `dev`、Status 为 `reconfirmation-pending`，并存在对应当前 Version 的待提交 Replan。
 
-提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化，重置 Review Status 和 Delivery Status。仍有未解决项时 Status 设为 `replan-required`，下一步继续 `/human-plan:dev replan <新 Plan Ref>`；全部解决后 Status 设为 `review-pending`，下一步进入 `/human-plan:plan-check <新 Plan Ref>`。
+提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化，重置 Review Status 和 Delivery Status。仍有未解决项时 Status 设为 `replan-required`，停止并要求 `/human-plan:dev replan <新 Plan Ref>`；全部解决后 Status 设为 `review-pending`，直接读取 `../plan-check/SKILL.md` 并以 `/human-plan:plan-check <新 Plan Ref>` 继续推进。
 
 ## `/human-plan:dev approve [Plan Ref]`
 
-仅当当前消息精确为 `/human-plan:dev approve <当前 Plan Ref>` 时执行，并满足共享批准条件。完成实现后返回 `/human-plan:audit <当前 Plan Ref>`。
+仅当当前消息精确为 `/human-plan:dev approve <当前 Plan Ref>` 时执行，并满足共享批准条件。完成实现后直接读取 `../audit/SKILL.md` 并以 `/human-plan:audit <当前 Plan Ref>` 继续推进。

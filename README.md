@@ -1,23 +1,44 @@
 # stupid-ai
 
-> A Claude Code plugin marketplace for Human Prompt and Human Plan gated AI development.
+> Claude Code plugins for AI work that should not drift: auto-loop plans, explicit human gates, and auditable execution.
 
-`stupid-ai` 不追求让 AI 一口气把代码写完，而是把 AI 开发拆成可审核、可回滚、可复用的 Human Prompt / Human Plan 流程。短提示词先被对齐成最终执行提示词；动代码前，AI 必须先把需求说清楚；每次有疑问，AI 必须先复述理解并等人确认；每次实现后，再用 audit 把代码拉回已批准的需求。
+`stupid-ai` 不追求让 AI “凭感觉一直写”。它把 Claude Code 的开发过程变成一条可读、可停、可审计的闭环：用户给一句诉求，插件自动整理 Human Plan、检查架构和设计、停在人工 approve gate；用户批准后才改源码，改完再自动 audit。
 
 它解决的是纯 AI 项目里最常见的几个坑：短提示词没对齐、需求漂移、越改越乱、直接动代码、重复扫描浪费 token、前端越改越丑、多个修复互相串分支。
+
+## Why Star
+
+- **One request, one loop**：不用复制一串命令，`human-plan` 会自动推进到下一个安全阶段。
+- **Only humans approve risk**：自然语言的“可以/按这个做”不算批准，只有精确 `approve` 才能改源码。
+- **Plans stay readable**：Human Plan 只写需求、边界、取舍和验收，不把人类拖进逐文件实现清单。
+- **Checks before code, audit after code**：动手前做 `plan-check` / `design-check`，实现后用 `audit` 拉回已批准需求。
+- **Built for real repos**：支持 code scan、batch scan、worktree 隔离和返工闭环。
 
 ## Plugins
 
 | Plugin | 作用 |
 |--------|------|
-| [human-plan](./plugins/human-plan) | Human Plan 驱动的 AI 开发闭环：idea / design / scan 产出顶层需求，dev 执行前必须 plan-check + design-check，approve 后才写代码，audit 负责验收和返工 |
+| [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：idea / design / scan 产出顶层需求，dev 自动跑 plan-check + design-check，到 approve gate 停住，批准后实现并 audit |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
+
+## Human Plan Loop
+
+```text
+one request
+  -> Human Plan
+  -> plan-check
+  -> design-check when needed
+  -> approve gate
+  -> implementation
+  -> audit
+  -> complete or rework gate
+```
 
 ## 特色
 
 - **Human Plan 是最终提示词**：Plan 面向人类审核，只保留需求、边界、取舍和验收，不写逐文件实现清单。
 - **Human Prompt 先对齐**：短需求先变成 Prompt Brief，AI 复述理解，用户 `confirm` 后再 `approve` 这份 Brief，并以它作为后续执行上下文。
-- **硬确认门禁**：自然语言的“可以/按这个做”不算批准；在 `human-plan` 中只有 approve 才允许改源码。
+- **自动推进，人工门禁**：无风险阶段自动继续；遇到 `confirm`、`approve`、版本不匹配或人类决策才停止。
 - **不让需求漂移**：同一个事项始终沿用同一个 Plan Ref，所有 replan 都绑定版本、基线和未变范围。
 - **设计和架构双检查**：`plan-check` 看系统影响和代码融入，`design-check` 看交互、视觉、状态和响应式体验。
 - **批量扫描不重复烧 token**：`batch-code-scan` 一次扫完整项目，拆出多个独立 Plan，再用 worktree 并行推进。
@@ -34,6 +55,15 @@
 ```
 /plugin install human-plan@stupid-ai
 /plugin install human-prompt@stupid-ai
+```
+
+最短使用方式：
+
+```text
+/human-plan:idea 我想把搜索体验改到用户一眼知道结果是否可靠
+
+# 插件自动推进到 approve gate 后，再由用户显式批准：
+/human-plan:dev approve docs/human-plans/search-revamp.md@v3
 ```
 
 本地开发/测试：

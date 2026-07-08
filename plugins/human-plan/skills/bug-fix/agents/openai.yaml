@@ -1,4 +1,4 @@
 interface:
   display_name: "Bug Fix"
-  short_description: "Plan and fix an identified bug on one canonical plan."
-  default_prompt: "/human-plan:bug-fix 这个问题已经定位，先给修复 Human Plan："
+  short_description: "Plan a known bug and auto-loop checks to the approval gate."
+  default_prompt: "/human-plan:bug-fix 这个问题已经定位，自动推进到需要我 approve 的地方："

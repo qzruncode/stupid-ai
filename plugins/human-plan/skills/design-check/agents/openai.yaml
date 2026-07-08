@@ -1,4 +1,4 @@
 interface:
   display_name: "Design Check"
-  short_description: "Review UI impact on the current canonical plan version."
+  short_description: "Review UI impact and continue to dev or approval gate."
   default_prompt: "/human-plan:design-check <Plan Ref>"

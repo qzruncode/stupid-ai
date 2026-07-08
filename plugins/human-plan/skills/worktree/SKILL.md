@@ -5,7 +5,7 @@ description: Use when the user invokes /human-plan:worktree with a Plan Ref or n
 
 # Worktree
 
-`worktree` 是操作型技能：只创建或复用一个与 Human Plan 一一对应的本地 git worktree，并准备继续执行该 Plan 所需的本地上下文。它不产出、不修改 Human Plan，不执行开发、检查或审计。
+`worktree` 是操作型技能：只创建或复用一个与 Human Plan 一一对应的本地 git worktree，并准备继续执行该 Plan 所需的本地上下文。它不产出、不修改 Human Plan，不执行开发、检查或审计；创建完成后按协议停止，让用户进入新 worktree 会话。
 
 所有产出使用简体中文。代码标识、路径、分支名、命令和错误信息不翻译。
 
@@ -65,4 +65,4 @@ cd <Worktree 路径>
 /human-plan:dev <Plan Ref>
 ```
 
-输出后立即停止。
+`worktree` 是自动 loop 的边界：输出后立即停止。

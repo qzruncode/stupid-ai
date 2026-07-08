@@ -39,13 +39,13 @@ description: Use when the user invokes /human-plan:batch-code-scan or asks to sc
 - 完整问题库存。
 - 每个候选 Plan 的标题、包含问题、严重级别、影响面、Plan Ref、是否适合并行。
 - 计划之间的依赖、冲突和建议执行顺序。
-- 下一步命令：单会话使用 `/human-plan:dev <Plan Ref>`；并行处理使用 `/human-plan:worktree <Plan Ref>`。
+- 推进方式：单会话默认选取最高优先级 Plan 自动进入 `/human-plan:dev <Plan Ref>`；并行处理时为每个 Plan 给出 `/human-plan:worktree <Plan Ref>`。
 
 ## `/human-plan:batch-code-scan`
 
 创建或复用批次索引，并为所有可行动问题创建候选 Human Plan。每个候选 Plan 的 Owner Skill 设为 `batch-code-scan`，Status 设为 `draft`。
 
-输出索引摘要、每个真实 Plan Ref、建议并行分组和下一步命令。并行分组里的每个 Plan 给出可直接复制的 `/human-plan:worktree <Plan Ref>`。随后停止。
+输出索引摘要、每个真实 Plan Ref 和建议并行分组。若用户明确要求并行或只建库存，则停止并给出每个 Plan 的 `/human-plan:worktree <Plan Ref>`；否则选择最高优先级且无待确认事项的 Plan，直接读取 `../dev/SKILL.md` 并以 `/human-plan:dev <Plan Ref>` 继续推进。
 
 ## `/human-plan:batch-code-scan replan [Plan Ref]`
 
@@ -54,10 +54,10 @@ description: Use when the user invokes /human-plan:batch-code-scan or asks to sc
 - Needs Reconfirmation 为空：按人类反馈调整该候选 Plan 的优先级、范围、依赖、边界或验收结果，增加 Version，Status 保持 `draft`。
 - Needs Reconfirmation 非空：按共享 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
 
-只更新当前 Plan；如需调整批次索引，只同步该 Plan 的标题、状态、Plan Ref、依赖、问题归属或并行建议。不重新扫描全项目。展示短摘要、真实 Plan Ref 和合法下一步后停止。
+只更新当前 Plan；如需调整批次索引，只同步该 Plan 的标题、状态、Plan Ref、依赖、问题归属或并行建议。不重新扫描全项目。展示短摘要和真实 Plan Ref。Needs Reconfirmation 为空时继续自动进入 `/human-plan:dev <当前 Plan Ref>`；Needs Reconfirmation 非空时按共享协议停止在 reconfirmation gate。
 
 ## `/human-plan:batch-code-scan confirm [Plan Ref]`
 
 仅当当前消息精确为 `/human-plan:batch-code-scan confirm <当前 Plan Ref>` 时执行。要求 Owner Skill 为 `batch-code-scan`、Status 为 `reconfirmation-pending`，并存在对应当前 Version 的待提交 Replan。
 
-提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化。仍有未解决项时 Status 设为 `draft`，下一步继续 `/human-plan:batch-code-scan replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，下一步进入 `/human-plan:dev <新 Plan Ref>`。
+提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化。仍有未解决项时 Status 设为 `draft`，停止并要求 `/human-plan:batch-code-scan replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，直接读取 `../dev/SKILL.md` 并以 `/human-plan:dev <新 Plan Ref>` 继续推进。

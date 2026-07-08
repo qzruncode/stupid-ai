@@ -47,9 +47,9 @@ Plan Ref 必须匹配当前 Version，否则停止且不写入。
 
 ## 结果
 
-- 需要 AI 调整且无需人类决策：记录当前 Version 结果，把 Status 设为 `replan-required`，返回对应 Owner 的 `replan`。
-- 需要人类决策：把明确决策点写入 Needs Reconfirmation，不得替人作答或只写在聊天中；Status 设为 `replan-required`，返回对应 Owner 的 `replan`。
-- Owner 为 `design` 且通过：记录当前 Version 结果，Status 设为 `draft`，返回 `/human-plan:dev <当前 Plan Ref>`。
-- Owner 为 `dev`、`bug-fix` 或 `audit` 且通过或不适用：记录当前 Version 结果，Status 设为 `ready-for-approval`，返回对应 Owner 的 `approve`。
+- 需要 AI 调整且无需人类决策：记录当前 Version 结果，把 Status 设为 `replan-required`，直接读取对应 Owner 的 `SKILL.md` 并以 `<owner> replan <当前 Plan Ref>` 继续推进。
+- 需要人类决策：把明确决策点写入 Needs Reconfirmation，不得替人作答或只写在聊天中；Status 设为 `replan-required`，停止并返回对应 Owner 的 `replan`。
+- Owner 为 `design` 且通过：记录当前 Version 结果，Status 设为 `draft`，直接读取 `../dev/SKILL.md` 并以 `/human-plan:dev <当前 Plan Ref>` 继续推进。
+- Owner 为 `dev`、`bug-fix` 或 `audit` 且通过或不适用：记录当前 Version 结果，Status 设为 `ready-for-approval`，停止在对应 Owner 的 `approve` gate。
 
-展示结论、真实 Plan Ref 和完整下一步命令后停止。
+只有进入人工 gate 时才展示完整下一步命令；否则展示结论和真实 Plan Ref 后自动继续下一阶段。

@@ -4,13 +4,13 @@
     "name": "yejiawei",
     "email": "2640199637@qq.com"
   },
-  "description": "stupid-ai — a marketplace for Human-Plan-driven Claude Code workflows. We trust LLMs less than we trust a written plan a human can read.",
+  "description": "stupid-ai — Claude Code plugins for AI work that should not drift: auto-loop plans, explicit human gates, and auditable execution.",
   "plugins": [
     {
       "name": "human-plan",
       "source": "./plugins/human-plan",
-      "description": "A Human Plan gated AI development workflow: align requirements, check architecture and design, approve before code, audit after implementation, with code-scan / batch-code-scan / arch-check for project health.",
-      "version": "0.1.1",
+      "description": "An auto-looping Human Plan workflow: turn one request into a checked plan, stop at confirm/approve gates, implement after approval, and audit the result.",
+      "version": "0.2.0",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"

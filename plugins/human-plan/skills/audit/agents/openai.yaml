@@ -1,4 +1,4 @@
 interface:
   display_name: "Audit"
-  short_description: "Audit and loop fixes on the same canonical plan."
+  short_description: "Audit implementation and auto-loop fix plans to the next gate."
   default_prompt: "/human-plan:audit <Plan Ref>"

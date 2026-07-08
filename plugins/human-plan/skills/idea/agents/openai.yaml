@@ -1,4 +1,4 @@
 interface:
   display_name: "Idea"
-  short_description: "Shape a fuzzy idea inside one canonical Human Plan."
-  default_prompt: "/human-plan:idea 我有个想法，帮我梳理成可落地需求："
+  short_description: "Shape a fuzzy idea and auto-loop to the approval gate."
+  default_prompt: "/human-plan:idea 我有个想法，帮我梳理并自动推进到需要我 approve 的地方："

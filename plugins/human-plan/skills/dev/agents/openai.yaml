@@ -1,4 +1,4 @@
 interface:
   display_name: "Dev"
-  short_description: "Develop through review and approval on one canonical plan."
-  default_prompt: "/human-plan:dev 帮我实现一个需求，先输出 Human Plan 给我审核"
+  short_description: "Plan development, auto-check it, and stop at approval."
+  default_prompt: "/human-plan:dev 帮我实现这个需求，自动推进到需要我 approve 的地方"

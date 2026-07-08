@@ -1,23 +1,30 @@
 # human-plan
 
-> A Human-Plan-driven development workflow plugin for Claude Code. Part of the [stupid-ai](../../) marketplace.
+> One request in Claude Code, one Human Plan loop: auto-check what can be checked, stop only when a human must decide.
 
 ## 这是什么
 
-`human-plan` 是一套 Human Plan 驱动的 AI 开发闭环。它把“让 AI 写代码”拆成：先对齐需求，再检查架构和设计，再人工 approve，最后实现和 audit。Human Plan 写在项目内 `docs/human-plans/` 下，只保存人类要审核的需求、边界、取舍和验收，不写代码、不写逐文件步骤。
+`human-plan` 是一套 Human Plan 驱动的 AI 开发闭环。用户只要输入诉求，Claude Code 默认自动推进：先对齐需求，再检查架构和设计，到人工 approve gate 停住；用户批准后自动实现、自动 audit，只有 confirm / approve / replan 这类需要人类决策的节点才打断。Human Plan 写在项目内 `docs/human-plans/` 下，只保存人类要审核的需求、边界、取舍和验收，不写代码、不写逐文件步骤。
+
+## 适合谁
+
+- 你经常让 Claude Code 改真实项目，但怕需求漂移、越改越乱。
+- 你希望 AI 自己跑完检查链路，但不允许它绕过人工批准直接改源码。
+- 你要把模糊想法、bug、代码扫描结果或体验方案变成可审的交付凭据。
+- 你想在多个 worktree / 多个会话里并行推进不同 Plan，又不想分支和上下文串味。
 
 核心路线：
 
 ```
 idea / code-scan / arch-check / batch-code-scan
-  → dev → plan-check → design-check → dev approve → audit
+  → dev → plan-check → design-check → dev approve gate → implement → audit
 
-design → design-check → dev → plan-check → design-check → dev approve → audit
+design → design-check → dev → plan-check → design-check → dev approve gate → implement → audit
 
-bug-fix → plan-check → design-check → bug-fix approve → audit
+bug-fix → plan-check → design-check → bug-fix approve gate → fix → audit
 ```
 
-所有下一步都由当前 Plan 的 Owner Skill、Status、Needs Reconfirmation 和 Version 决定；任一步有待确认事项，都必须回到 Owner Skill replan，再由用户显式 confirm。
+所有下一步都由当前 Plan 的 Owner Skill、Status、Needs Reconfirmation 和 Version 决定。无人工 gate 时，当前 skill 会直接读取下一阶段 skill 的 `SKILL.md` 并在同一会话继续推进，不要求用户复制命令；任一步有待确认事项，都必须回到 Owner Skill replan，再由用户显式 confirm。到达 approve gate 时必须停止，只有精确 `/human-plan:<owner> approve <Plan Ref>` 才能改源码。
 
 插件内部把共享状态机放在 `shared/human-plan-protocol.md`；每个 skill 的 `SKILL.md` 只保留自己的专业职责、判断方法、产出标准和命令差异，避免把 Human Plan 闭环写成空壳流程。
 
@@ -27,11 +34,11 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 |------|-------|------|
 | 需求成形 | `/human-plan:idea` | 把模糊想法整理成可落地的顶层需求 Plan |
 | 体验设计 | `/human-plan:design` | 资深 UX/UI 角色产出体验 brief Plan |
-| 开发执行 | `/human-plan:dev <Plan Ref>` | 把已接受的 Plan 转成开发 Plan；approve 后才允许改源码 |
-| Bug 修复 | `/human-plan:bug-fix` | 已定位 bug 先写修复 Plan，再走检查和 approve |
-| 架构检查 | `/human-plan:plan-check <Plan Ref>` | 检查需求是否能融入现有系统、代码结构和边界 |
-| 设计检查 | `/human-plan:design-check <Plan Ref>` | 检查交互、视觉、状态、响应式和可用性 |
-| 审计闭环 | `/human-plan:audit <Plan Ref>` | 对已实现代码做需求一致性和质量审计 |
+| 开发执行 | `/human-plan:dev <Plan Ref>` | 把已接受的 Plan 转成开发 Plan，并自动推进检查直到 approve gate |
+| Bug 修复 | `/human-plan:bug-fix` | 已定位 bug 先写修复 Plan，再自动走检查到 approve gate |
+| 架构检查 | `/human-plan:plan-check <Plan Ref>` | 检查需求是否能融入现有系统、代码结构和边界，通过后自动进入下一检查或 approve gate |
+| 设计检查 | `/human-plan:design-check <Plan Ref>` | 检查交互、视觉、状态、响应式和可用性，通过后自动进入 dev 或 approve gate |
+| 审计闭环 | `/human-plan:audit <Plan Ref>` | 对已实现代码做需求一致性和质量审计，通过后结束；返工无需人工决策时自动推进到下一 approve gate |
 | 隔离执行 | `/human-plan:worktree <Plan Ref>` | 为一个 Plan 创建一个独立 worktree 和分支 |
 | 持续扫描 | `/human-plan:code-scan` | 扫描当前项目，产出一个优先处理 Plan |
 | 批量扫描 | `/human-plan:batch-code-scan` | 一次扫完整项目，拆出多个可并行推进的 Plan |
@@ -53,25 +60,22 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 /plugin install human-plan@stupid-ai
 ```
 
-## 使用
+## 快速开始
 
-安装后 11 个 skill 会按描述自动触发，也可以显式调用。插件命令使用 `/human-plan:<skill>` 命名空间。
+安装后 11 个 skill 会按描述自动触发，也可以显式调用。插件命令使用 `/human-plan:<skill>` 命名空间。日常使用优先输入一个诉求，让插件自己 loop 到人工 gate：
 
 ```
 /human-plan:idea 我觉得搜索体验不太对劲
-/human-plan:dev docs/human-plans/search-revamp.md@v2
-/human-plan:plan-check docs/human-plans/search-revamp.md@v3
-/human-plan:design-check docs/human-plans/search-revamp.md@v3
+
+# 到 approve gate 后，由用户精确批准。只有这一步之后才允许改源码。
 /human-plan:dev approve docs/human-plans/search-revamp.md@v3
-/human-plan:audit docs/human-plans/search-revamp.md@v3
 ```
 
 做前端体验方案时：
 
 ```
 /human-plan:design 为搜索结果页生成体验 Plan
-/human-plan:design-check docs/human-plans/search-experience.md@v1
-/human-plan:dev docs/human-plans/search-experience.md@v2
+/human-plan:dev approve docs/human-plans/search-experience.md@v3
 ```
 
 批量治理时：
@@ -81,12 +85,23 @@ bug-fix → plan-check → design-check → bug-fix approve → audit
 /human-plan:worktree docs/human-plans/BCS-001-cache-contract.md@v1
 ```
 
+## 自动 loop 停在哪里
+
+`human-plan` 会自动推进安全阶段，但这些情况必须停止：
+
+- `Needs Reconfirmation` 非空，需要用户补充业务、产品、合规或破坏性变更决策
+- Status 为 `reconfirmation-pending`，等待用户精确 `confirm`
+- 已到 `approve gate`，等待用户精确 `approve`
+- Plan Ref 版本不匹配、Owner/Status 前置条件不满足
+- `worktree` 已创建，需要用户进入新 worktree 会话
+
 ## 约定
 
 - Human Plan 写在项目内 `docs/human-plans/` 下，文件名即 Plan ID
 - Plan Ref 格式：`<Plan 文件路径>@v<Version>`
 - 每个 Plan 一个 worktree，避免分支串味
 - 所有产出使用简体中文（代码标识、路径、命令不翻译）
+- 默认自动推进可安全执行的 loop 阶段；只有 `confirm`、`approve`、人类决策、版本不匹配、前置条件不满足或 `worktree` 创建完成时停止
 - `worktree` skill 会用相对符号链接把 Plan 文件和必要本地配置带进新 worktree；若项目本身存在 `.claude/skills`，才同步该目录
 
 ## 结构

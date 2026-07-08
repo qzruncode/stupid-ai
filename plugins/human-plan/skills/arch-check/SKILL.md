@@ -36,7 +36,7 @@ description: Use when the user invokes /human-plan:arch-check or asks whether cu
 
 识别当前方案与成熟方案的差距，创建 Version 1 的 Human Plan。Owner Skill 设为 `arch-check`，Status 设为 `draft`。
 
-只展示短摘要、Status、Needs Reconfirmation、真实 Plan Ref 和下一步命令。无待确认事项时，下一步同时给出 `/human-plan:dev <当前 Plan Ref>` 和 `/human-plan:arch-check replan <当前 Plan Ref>`；有待确认事项时，只给出 `/human-plan:arch-check replan <当前 Plan Ref>`。
+只展示短摘要、Status、Needs Reconfirmation 和真实 Plan Ref。无待确认事项时，直接读取 `../dev/SKILL.md` 并以 `/human-plan:dev <当前 Plan Ref>` 继续推进；有待确认事项时，停止并只给出 `/human-plan:arch-check replan <当前 Plan Ref>`。
 
 ## `/human-plan:arch-check replan [Plan Ref]`
 
@@ -45,10 +45,10 @@ description: Use when the user invokes /human-plan:arch-check or asks whether cu
 - Needs Reconfirmation 为空：按人类反馈调整目标状态、采用范围、成熟方案取舍或验收结果，增加 Version，Status 保持 `draft`。
 - Needs Reconfirmation 非空：按共享 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
 
-不重复完整外部调研。展示短摘要、真实 Plan Ref 和合法下一步后停止。
+不重复完整外部调研。展示短摘要和真实 Plan Ref。Needs Reconfirmation 为空时继续自动进入 `/human-plan:dev <当前 Plan Ref>`；Needs Reconfirmation 非空时按共享协议停止在 reconfirmation gate。
 
 ## `/human-plan:arch-check confirm [Plan Ref]`
 
 仅当当前消息精确为 `/human-plan:arch-check confirm <当前 Plan Ref>` 时执行。要求 Owner Skill 为 `arch-check`、Status 为 `reconfirmation-pending`，并存在对应当前 Version 的待提交 Replan。
 
-提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化。仍有未解决项时 Status 设为 `draft`，下一步继续 `/human-plan:arch-check replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，下一步进入 `/human-plan:dev <新 Plan Ref>`。
+提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化。仍有未解决项时 Status 设为 `draft`，停止并要求 `/human-plan:arch-check replan <新 Plan Ref>`；全部解决后 Status 设为 `draft`，直接读取 `../dev/SKILL.md` 并以 `/human-plan:dev <新 Plan Ref>` 继续推进。

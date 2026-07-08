@@ -31,8 +31,8 @@ description: Use when the user invokes /human-plan:audit or asks to review compl
 要求 Status 为 `implemented`，且 Delivery Status 存在当前 Version 的 approval 和 implementation 记录。否则停止并返回当前合法下一步。
 
 - 通过且 Needs Reconfirmation 为空：Status 设为 `complete`，记录当前 Version 的 Audit 通过，明确流程结束。
-- 需要返工：Owner Skill 设为 `audit`，Status 设为 `audit-fixes-required`，记录阻塞问题和缺失验证，返回 `/human-plan:audit replan <当前 Plan Ref>`。
-- 需要人类决策：同时把明确决策点写入 Needs Reconfirmation，后续必须经过 Audit Reconfirmation。
+- 需要返工且无需人类决策：Owner Skill 设为 `audit`，Status 设为 `audit-fixes-required`，记录阻塞问题和缺失验证，直接以 `/human-plan:audit replan <当前 Plan Ref>` 继续推进。
+- 需要人类决策：同时把明确决策点写入 Needs Reconfirmation，停止并进入 Audit Reconfirmation。
 
 Needs Reconfirmation 非空时不得判定通过或设为 `complete`。只输出阻塞问题，不罗列无关小问题。
 
@@ -43,14 +43,14 @@ Needs Reconfirmation 非空时不得判定通过或设为 `complete`。只输出
 - Needs Reconfirmation 为空：把 Current Plan 更新为精简返工范围，增加 Version，记录变化，重置 Review Status 和 Delivery Status，Owner Skill 设为 `audit`、Status 设为 `review-pending`。
 - Needs Reconfirmation 非空：按共享 Reconfirmation 协议准备或修正待提交 Replan，Version 不变。
 
-展示短摘要、真实 Plan Ref 和合法下一步后停止。普通 replan 下一步进入 `/human-plan:plan-check <当前 Plan Ref>`。
+展示短摘要和真实 Plan Ref。Needs Reconfirmation 为空时继续自动进入 `/human-plan:plan-check <当前 Plan Ref>`；Needs Reconfirmation 非空时按共享协议停止在 reconfirmation gate。
 
 ## `/human-plan:audit confirm [Plan Ref]`
 
 仅当当前消息精确为 `/human-plan:audit confirm <当前 Plan Ref>` 时执行。要求 Owner Skill 为 `audit`、Status 为 `reconfirmation-pending`，并存在对应当前 Version 的待提交 Replan。
 
-提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化，重置 Review Status 和 Delivery Status。仍有未解决项时 Status 设为 `replan-required`，下一步继续 `/human-plan:audit replan <新 Plan Ref>`；全部解决后 Status 设为 `review-pending`，下一步进入 `/human-plan:plan-check <新 Plan Ref>`。
+提交待提交 Replan，清除已解决的确认项，增加 Version 并记录变化，重置 Review Status 和 Delivery Status。仍有未解决项时 Status 设为 `replan-required`，停止并要求 `/human-plan:audit replan <新 Plan Ref>`；全部解决后 Status 设为 `review-pending`，直接读取 `../plan-check/SKILL.md` 并以 `/human-plan:plan-check <新 Plan Ref>` 继续推进。
 
 ## `/human-plan:audit approve [Plan Ref]`
 
-仅当当前消息精确为 `/human-plan:audit approve <当前 Plan Ref>` 时执行，并满足共享批准条件。完成返工后 Status 设为 `implemented`，记录当前 Version 的 approval、implementation 和验证结果，返回 `/human-plan:audit <当前 Plan Ref>`。
+仅当当前消息精确为 `/human-plan:audit approve <当前 Plan Ref>` 时执行，并满足共享批准条件。完成返工后 Status 设为 `implemented`，记录当前 Version 的 approval、implementation 和验证结果，直接以 `/human-plan:audit <当前 Plan Ref>` 继续推进。

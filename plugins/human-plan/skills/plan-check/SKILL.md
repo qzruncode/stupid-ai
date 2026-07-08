@@ -45,9 +45,9 @@ Plan Ref 必须匹配当前 Version，否则停止且不写入。
 
 ## 结果
 
-- 需要 AI 调整且无需人类决策：写入当前 Version 的 Review Status，把 Status 设为 `replan-required`，返回对应 Owner 的 `replan`。
-- 需要人类决策：把明确决策点写入 Needs Reconfirmation，不得替人作答或只写在聊天中；Status 设为 `replan-required`，返回对应 Owner 的 `replan`。
-- 通过且 Frontend Impact 为 `yes` 或 `unknown`：记录当前 Version 通过，Status 保持 `review-pending`，返回 `/human-plan:design-check <当前 Plan Ref>`。
-- 通过且 Frontend Impact 为 `no`：记录 plan-check 通过和 design-check 不适用，Status 设为 `ready-for-approval`，返回对应 Owner 的 `approve`。
+- 需要 AI 调整且无需人类决策：写入当前 Version 的 Review Status，把 Status 设为 `replan-required`，直接读取对应 Owner 的 `SKILL.md` 并以 `<owner> replan <当前 Plan Ref>` 继续推进。
+- 需要人类决策：把明确决策点写入 Needs Reconfirmation，不得替人作答或只写在聊天中；Status 设为 `replan-required`，停止并返回对应 Owner 的 `replan`。
+- 通过且 Frontend Impact 为 `yes` 或 `unknown`：记录当前 Version 通过，Status 保持 `review-pending`，直接读取 `../design-check/SKILL.md` 并以 `/human-plan:design-check <当前 Plan Ref>` 继续推进。
+- 通过且 Frontend Impact 为 `no`：记录 plan-check 通过和 design-check 不适用，Status 设为 `ready-for-approval`，停止在对应 Owner 的 `approve` gate。
 
-Review Status 必须绑定当前 Version，旧版本结果无效。展示结论、真实 Plan Ref 和完整下一步命令后停止。
+Review Status 必须绑定当前 Version，旧版本结果无效。只有进入人工 gate 时才展示完整下一步命令；否则展示结论和真实 Plan Ref 后自动继续下一阶段。

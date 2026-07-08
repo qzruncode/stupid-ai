@@ -1,4 +1,4 @@
 interface:
   display_name: "Plan Check"
-  short_description: "Review the current canonical plan version and code impact."
+  short_description: "Review code impact and continue to design or approval gate."
   default_prompt: "/human-plan:plan-check <Plan Ref>"
