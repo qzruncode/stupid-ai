@@ -10,7 +10,7 @@
       "name": "human-plan",
       "source": "./plugins/human-plan",
       "description": "An auto-looping Human Plan workflow: run batch scan loops, stop at confirm/approve gates, track tokens, implement after approval, and audit the result.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"

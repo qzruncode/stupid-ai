@@ -1,6 +1,6 @@
 {
   "name": "human-plan",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "An auto-looping Human Plan workflow for Claude Code: run batch scan loops, stop only at confirm/approve gates, track tokens, implement after approval, and audit the result.",
   "author": {
     "name": "yejiawei",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const { spawnSync } = require("child_process");
-const { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync, unlinkSync } = require("fs");
+const { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync, unlinkSync, readdirSync } = require("fs");
 const { join, resolve } = require("path");
 
 const cwd = process.cwd();
@@ -41,7 +41,20 @@ function nowIso() {
 }
 
 function defaultBatchId() {
-  return `${nowIso().slice(0, 10).replace(/-/g, "")}-001`;
+  const datePart = nowIso().slice(0, 10).replace(/-/g, "");
+  const batchDir = join(loopDir, "batches");
+  const ids = [];
+  if (existsSync(batchDir)) {
+    for (const name of readdirSync(batchDir)) {
+      const match = name.match(new RegExp(`^${datePart}-(\\d{3})\\.md$`));
+      if (match) ids.push(Number.parseInt(match[1], 10));
+    }
+  }
+  const current = readState().batch_id || "";
+  const currentMatch = current.match(new RegExp(`^${datePart}-(\\d{3})$`));
+  if (currentMatch) ids.push(Number.parseInt(currentMatch[1], 10));
+  const next = ids.length ? Math.max(...ids) + 1 : 1;
+  return `${datePart}-${String(next).padStart(3, "0")}`;
 }
 
 function estimateTokens(text) {
@@ -77,7 +90,10 @@ function claudePrompt(tick, maxTicks) {
     `- max_ticks: ${maxTicks}`,
     "",
     "执行一个 tick。只推进一个明确动作，维护 state.json、batch-index.md、run-log.md、gates.md、changelog.md 和 token-ledger.md。",
-    "如果没有 active batch，先走 batch-code-scan；如果已有 batch，处理下一个 pending Plan；遇到 approve/confirm/人类决策就写 gates.md 并换下一个。",
+    "如果没有 active batch，先走 batch-code-scan；如果已有 batch，按 batch-index 顺序只处理当前 active Plan；没有 active Plan 时才选择第一个 pending Plan。",
+    "遇到 approve/confirm/人类决策时，把当前 Plan 写入 gates.md 并标为 gated，整个 batch 暂停等待这个 Plan 的人类输入；不得跳过 gated Plan 去处理后续 pending Plan。",
+    "只有所有 Plan 都是 complete 且代码状态已固化时才归档当前 batch；gated/blocked 只汇总等待事项，不得启动下一轮 batch-code-scan。",
+    "max_ticks 用尽只是本次 runner 配额结束，不是人工 gate。",
   ].join("\n");
 }
 
@@ -106,17 +122,27 @@ function start(maxTicksArg) {
   ensureLoopDir();
   if (existsSync(stopPath)) unlinkSync(stopPath);
   const current = readState();
+  const shouldStartNewBatch = current.batch_status === "archived";
+  const batchStatus = shouldStartNewBatch
+    ? "ready-for-scan"
+    : current.batch_status || (current.batch_id ? "active" : "ready-for-scan");
   const state = {
+    ...current,
     status: "running",
-    batch_id: current.batch_id || defaultBatchId(),
+    batch_status: batchStatus,
+    batch_id: shouldStartNewBatch ? defaultBatchId() : current.batch_id || defaultBatchId(),
     max_ticks: parseMaxTicks(maxTicksArg),
     used_ticks: 0,
     token_used_estimate: 0,
+    consecutive_failures: 0,
     started_at: nowIso(),
     updated_at: nowIso(),
     cwd,
     runner: "plugins/human-plan/loop/runner.js",
   };
+  delete state.stop_reason;
+  delete state.last_error;
+  delete state.last_exit_code;
   writeState(state);
   logRun(`start max_ticks=${state.max_ticks}`);
 
