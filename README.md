@@ -21,6 +21,7 @@
 |--------|------|
 | [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：单诉求自动到 approve gate，后台 batch loop 可按 tick 上限扫描、推进、记录 gate 和 token |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
+| [code-cleanup](./plugins/code-cleanup) | 持续维护功能清单，按可验证批次合并重复实现，并用 Agent 规则、lint 和 CI 防止代码重新膨胀 |
 
 ## Human Plan Loop
 
@@ -62,6 +63,7 @@ loop start 5
 ```
 /plugin install human-plan@stupid-ai
 /plugin install human-prompt@stupid-ai
+/plugin install code-cleanup@stupid-ai
 ```
 
 最短使用方式：
@@ -85,6 +87,7 @@ node plugins/human-plan/loop/runner.js start 5
 /plugin marketplace add /path/to/stupid-ai
 /plugin install human-plan@stupid-ai
 /plugin install human-prompt@stupid-ai
+/plugin install code-cleanup@stupid-ai
 ```
 
 ## 结构
@@ -99,7 +102,12 @@ stupid-ai/                              # marketplace 仓库
 │   │   │   └── plugin.json
 │   │   ├── skills/
 │   │   └── README.md
-│   └── human-prompt/                   # Human Prompt 对齐 plugin
+│   ├── human-prompt/                   # Human Prompt 对齐 plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── skills/
+│   │   └── README.md
+│   └── code-cleanup/                   # 代码库持续收敛 plugin
 │       ├── .claude-plugin/
 │       │   └── plugin.json
 │       ├── skills/
