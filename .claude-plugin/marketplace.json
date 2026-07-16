@@ -47,6 +47,20 @@
       "repository": "https://github.com/qzruncode/stupid-ai",
       "license": "MIT",
       "keywords": ["workflow", "cleanup", "refactor", "deduplication", "code-quality", "guardrails"]
+    },
+    {
+      "name": "repo-guardian",
+      "source": "./plugins/repo-guardian",
+      "description": "A comprehensive repository governance plugin that scans, audits, and plans improvements across architecture, code quality, dependencies, performance, design/UX, and roadmap — leveraging GitHub MCP to compare against ecosystem best practices.",
+      "version": "0.1.0",
+      "author": {
+        "name": "yejiawei",
+        "email": "2640199637@qq.com"
+      },
+      "homepage": "https://github.com/qzruncode/stupid-ai",
+      "repository": "https://github.com/qzruncode/stupid-ai",
+      "license": "MIT",
+      "keywords": ["governance", "audit", "code-quality", "architecture", "dependencies", "performance", "design-review", "roadmap", "best-practices"]
     }
   ]
 }
