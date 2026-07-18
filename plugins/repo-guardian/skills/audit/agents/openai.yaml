@@ -1,0 +1,4 @@
+interface:
+  display_name: "仓库审计"
+  short_description: "建立有证据、有优先级、可直接进入治理阶段的完整仓库问题清单"
+  default_prompt: "使用 $audit 审计这个仓库，只报告已经证明的问题并给出治理优先级。"

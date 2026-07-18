@@ -1,0 +1,4 @@
+interface:
+  display_name: "仓库路线图"
+  short_description: "基于项目目标、现状和当前生态，决定下一步仓库治理与建设方向"
+  default_prompt: "使用 $roadmap 决定这个仓库下一步应该保留、停止、治理或建设什么。"

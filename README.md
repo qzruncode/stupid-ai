@@ -14,7 +14,7 @@
 - **Plans stay readable**：Human Plan 只写需求、边界、取舍和验收，不把人类拖进逐文件实现清单。
 - **Checks before code, audit after code**：动手前做 `plan-check` / `design-check`，实现后用 `audit` 拉回已批准需求。
 - **Built for real repos**：支持 code scan、batch scan、worktree 隔离和返工闭环。
-- **Govern the whole repo, not just one change**：`repo-guardian` 独立扫描架构、代码质量、依赖、性能、设计和选型，对照 GitHub 生态找出"还在重复造轮子"和"已有更好方案"，并给出下一步该做什么。
+- **Govern the whole repo, not just one change**：`repo-guardian` 先用证据确认问题，再实际完成治理和验证，也能基于项目目标与当前生态决定下一步。
 
 ## Plugins
 
@@ -23,7 +23,7 @@
 | [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：单诉求自动到 approve gate，后台 batch loop 可按 tick 上限扫描、推进、记录 gate 和 token |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
 | [code-cleanup](./plugins/code-cleanup) | 用一个 skill 初始化和更新无代码功能基准，再用 cleanup 持续收敛业务迭代后越来越乱的实现 |
-| [repo-guardian](./plugins/repo-guardian) | 独立的仓库治理插件：从架构、代码质量、依赖、性能、设计、技术选型多维度扫描仓库，对照 GitHub 生态给出治理建议和下一步路线图 |
+| [repo-guardian](./plugins/repo-guardian) | 独立的仓库治理插件：审计真实问题、完成并验证改进、决定项目下一步 |
 
 ## Human Plan Loop
 
@@ -90,17 +90,17 @@ loop start 5
 /human-plan:dev approve docs/human-plans/search-revamp.md@v3
 ```
 
-仓库治理（独立插件，跑完即输出，不进入任何 loop）：
+仓库治理（独立插件，不进入 `human-plan` loop）：
 
 ```text
-# 一次扫完所有维度，输出全景治理报告
-/repo-guardian:full-scan
+# 全面或定向审计，只报告有证据的问题
+/repo-guardian:audit
 
 # 只看项目下一步该做什么
 /repo-guardian:roadmap
 
-# 只审计依赖：过时包、漏洞、有没有在重复造轮子
-/repo-guardian:dep-audit
+# 直接完成一个已确认问题的治理并验证结果
+/repo-guardian:improve RG-003
 ```
 
 后台循环：

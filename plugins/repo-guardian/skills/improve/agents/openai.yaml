@@ -1,0 +1,4 @@
+interface:
+  display_name: "仓库治理"
+  short_description: "从根因完成仓库问题治理，并用修改前后证据验证实际收益"
+  default_prompt: "使用 $improve 解决这个仓库问题，并用修改前后证据证明治理结果。"
