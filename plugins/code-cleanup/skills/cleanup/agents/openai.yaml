@@ -1,4 +1,0 @@
-interface:
-  display_name: "Code Cleanup"
-  short_description: "Shrink code safely and prevent duplicate logic."
-  default_prompt: "Use $cleanup to map behavior, consolidate duplicated code, and add lasting guardrails."

@@ -22,7 +22,7 @@
 |--------|------|
 | [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：单诉求自动到 approve gate，后台 batch loop 可按 tick 上限扫描、推进、记录 gate 和 token |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
-| [code-cleanup](./plugins/code-cleanup) | 持续维护功能清单，按可验证批次合并重复实现，并用 Agent 规则、lint 和 CI 防止代码重新膨胀 |
+| [code-cleanup](./plugins/code-cleanup) | 分开生成和更新功能基准，再以它为唯一验收依据持续提升代码性能、资源效率和可维护性 |
 | [repo-guardian](./plugins/repo-guardian) | 独立的仓库治理插件：从架构、代码质量、依赖、性能、设计、技术选型多维度扫描仓库，对照 GitHub 生态给出治理建议和下一步路线图 |
 
 ## Human Plan Loop
@@ -43,6 +43,21 @@ loop start 5
   -> gates / changelog / token-ledger
   -> stop after 5 ticks
 ```
+
+## Feature Passport
+
+```text
+/code-cleanup:generate
+  -> 从当前产品建立初始功能基准
+
+/code-cleanup:update <已批准的业务变化>
+  -> 只更新功能基准，不实现代码
+
+/code-cleanup:optimize [功能 ID 或范围]
+  -> 以 ready 基准验收功能，用前后指标证明代码更高效
+```
+
+三个过程互不自动调用。功能清单不包含源码路径、函数或框架，但必须完整到让另一个模型只拿这一个文件就能复刻和验收产品。基准建立后，代码与清单冲突时修代码，不反向修改基准迁就实现。
 
 ## 特色
 
@@ -124,7 +139,7 @@ stupid-ai/                              # marketplace 仓库
 │   │   │   └── plugin.json
 │   │   ├── skills/
 │   │   └── README.md
-│   ├── code-cleanup/                   # 代码库持续收敛 plugin
+│   ├── code-cleanup/                   # 功能通行证与代码优化分离 plugin
 │   │   ├── .claude-plugin/
 │   │   │   └── plugin.json
 │   │   ├── skills/

@@ -1,7 +1,7 @@
 {
   "name": "code-cleanup",
-  "version": "0.1.0",
-  "description": "A continuous codebase cleanup workflow that maps behavior, consolidates duplicated logic, preserves verified functionality, and installs guardrails against future bloat.",
+  "version": "0.3.0",
+  "description": "A functional-baseline workflow with separate commands to generate and update the baseline, then measurably optimize or rewrite code against it.",
   "author": {
     "name": "yejiawei",
     "email": "2640199637@qq.com"
