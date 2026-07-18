@@ -14,15 +14,16 @@ REQUIRED_SECTIONS = [
     "## 2. 产品边界",
     "## 3. 参与者与权限",
     "## 4. 术语与业务对象",
-    "## 5. 全局规则",
-    "## 6. 功能索引",
-    "## 7. 功能详述",
-    "## 8. 跨功能旅程",
-    "## 9. 外部契约总表",
-    "## 10. 数据生命周期",
-    "## 11. 质量属性",
-    "## 12. 排除项与未决事项",
-    "## 13. 变更记录",
+    "## 5. 产品体验规范",
+    "## 6. 全局规则",
+    "## 7. 功能索引",
+    "## 8. 功能详述",
+    "## 9. 跨功能旅程",
+    "## 10. 外部契约总表",
+    "## 11. 数据生命周期",
+    "## 12. 质量属性",
+    "## 13. 排除项与未决事项",
+    "## 14. 变更记录",
 ]
 
 REQUIRED_METADATA = [
@@ -51,7 +52,7 @@ REQUIRED_FEATURE_SECTIONS = [
 ]
 
 FEATURE_HEADING = re.compile(r"^### (F-\d{3,})\s+(.+?)\s*$", re.MULTILINE)
-UNKNOWN_MARKERS = re.compile(r"\b(?:TODO|TBD)\b|未知|待确认", re.IGNORECASE)
+UNKNOWN_MARKERS = re.compile(r"\b(?:TODO|TBD)\b|未知|待确认|待补充", re.IGNORECASE)
 
 
 def section_body(text: str, heading: str) -> str:
@@ -103,7 +104,7 @@ def main() -> int:
         if heading in text and not section_body(text, heading).strip():
             errors.append(f"empty section: {heading}")
 
-    details = section_body(text, "## 7. 功能详述")
+    details = section_body(text, "## 8. 功能详述")
     matches = list(FEATURE_HEADING.finditer(details))
     if not matches:
         errors.append("功能详述 must contain at least one heading such as '### F-001 功能名称'")
@@ -118,14 +119,14 @@ def main() -> int:
         end = matches[index + 1].start() if index + 1 < len(matches) else len(details)
         body = details[match.end() : end]
 
-        status_match = re.search(r"^- \*\*契约状态\*\*:\s*(\S+)", body, re.MULTILINE)
+        status_match = re.search(r"^- \*\*基准状态\*\*:\s*(\S+)", body, re.MULTILINE)
         if not status_match:
-            errors.append(f"{feature_id}: missing 契约状态")
+            errors.append(f"{feature_id}: missing 基准状态")
             status = None
         else:
             status = status_match.group(1)
             if status not in {"ready", "draft", "deprecated"}:
-                errors.append(f"{feature_id}: invalid 契约状态 '{status}'")
+                errors.append(f"{feature_id}: invalid 基准状态 '{status}'")
         statuses[feature_id] = status
 
         if not re.search(r"^- \*\*目标\*\*:\s*\S", body, re.MULTILINE):
@@ -143,7 +144,7 @@ def main() -> int:
         if status == "ready" and UNKNOWN_MARKERS.search(body):
             errors.append(f"{feature_id}: ready feature contains an unresolved marker")
 
-    index_body = section_body(text, "## 6. 功能索引")
+    index_body = section_body(text, "## 7. 功能索引")
     for feature_id in seen:
         if feature_id not in index_body:
             errors.append(f"{feature_id}: missing from 功能索引")
@@ -158,7 +159,7 @@ def main() -> int:
             continue
         index_status = re.search(r"\b(ready|draft|deprecated)\b", index_line.group(0))
         if not index_status:
-            errors.append(f"{feature_id}: 功能索引 row is missing 契约状态")
+            errors.append(f"{feature_id}: 功能索引 row is missing 基准状态")
         elif statuses.get(feature_id) and index_status.group(1) != statuses[feature_id]:
             errors.append(f"{feature_id}: 功能索引 status does not match 功能详述")
     indexed_ids = set(re.findall(r"\bF-\d{3,}\b", index_body))
@@ -174,8 +175,10 @@ def main() -> int:
             errors.append("ready coverage contains an unresolved marker")
 
     leakage_patterns = {
+        "fenced code block": r"^\s*```",
         "source-directory path": r"(?:^|[\s`(])(?:src|lib|app|apps|packages)/[\w./-]+",
-        "implementation filename": r"\b[\w-]+\.(?:py|ts|tsx|js|jsx|java|go|rs|rb|php)\b",
+        "implementation filename": r"\b[\w-]+\.(?:py|ts|tsx|js|jsx|java|go|rs|rb|php|vue|svelte|css|scss|sql)\b",
+        "implementation evidence": r"实现证据|源码位置|代码位置|调用链|测试文件|文件路径|函数名|类名|方法名|模块名|组件名|数据库表名|数据库字段|框架名称|依赖包|环境变量",
     }
     for label, pattern in leakage_patterns.items():
         if re.search(pattern, text, re.MULTILINE):

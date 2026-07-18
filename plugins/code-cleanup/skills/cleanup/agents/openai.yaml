@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cleanup Against Baseline"
+  short_description: "Continuously simplify AI-evolved code without losing features."
+  default_prompt: "Use $cleanup to clean up this implementation while preserving every ready feature in the baseline."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Optimize Against Baseline"
-  short_description: "Make code measurably more efficient without functional drift."
-  default_prompt: "Use $optimize to improve this implementation and prove it still satisfies the functional baseline."

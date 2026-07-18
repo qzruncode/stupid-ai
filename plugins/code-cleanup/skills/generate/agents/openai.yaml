@@ -1,4 +1,0 @@
-interface:
-  display_name: "Generate Functional Baseline"
-  short_description: "Derive the initial code-free functional baseline."
-  default_prompt: "Use $generate to establish the complete functional baseline for this repository without changing code."

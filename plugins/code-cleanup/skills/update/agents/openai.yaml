@@ -1,4 +1,0 @@
-interface:
-  display_name: "Update Functional Baseline"
-  short_description: "Apply approved business changes only to the baseline."
-  default_prompt: "Use $update to apply this approved business change to the functional baseline before implementation."
