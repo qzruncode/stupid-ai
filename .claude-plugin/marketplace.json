@@ -37,8 +37,8 @@
     {
       "name": "code-cleanup",
       "source": "./plugins/code-cleanup",
-      "description": "Maintain one complete code-free product baseline, then continuously clean up or rewrite AI-evolved code against that baseline.",
-      "version": "0.4.0",
+      "description": "Build a complete code-free baseline for the declared product scope, then systematically rescan and clean that scope with mandatory file coverage and persistent batch state.",
+      "version": "0.5.0",
       "author": {
         "name": "yejiawei",
         "email": "2640199637@qq.com"
@@ -46,7 +46,7 @@
       "homepage": "https://github.com/qzruncode/stupid-ai",
       "repository": "https://github.com/qzruncode/stupid-ai",
       "license": "MIT",
-      "keywords": ["workflow", "feature-list", "functional-baseline", "cleanup", "refactor", "code-quality"]
+      "keywords": ["workflow", "feature-list", "functional-baseline", "systematic-cleanup", "refactor", "code-quality"]
     },
     {
       "name": "repo-guardian",

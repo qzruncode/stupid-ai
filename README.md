@@ -22,7 +22,7 @@
 |--------|------|
 | [human-plan](./plugins/human-plan) | 自动 loop 的 Human Plan 开发闭环：单诉求自动到 approve gate，后台 batch loop 可按 tick 上限扫描、推进、记录 gate 和 token |
 | [human-prompt](./plugins/human-prompt) | Human Prompt 对齐闭环：把人类的一句话短需求变成已批准的 Prompt Brief，作为后续执行上下文 |
-| [code-cleanup](./plugins/code-cleanup) | 用一个 skill 初始化和更新无代码功能基准，再用 cleanup 持续收敛业务迭代后越来越乱的实现 |
+| [code-cleanup](./plugins/code-cleanup) | 先建立声明范围内完整的无代码功能基准，再以 100% 文件覆盖和持久批次计划系统清理业务迭代后越来越乱的实现 |
 | [repo-guardian](./plugins/repo-guardian) | 独立的仓库治理插件：审计真实问题、完成并验证改进、决定项目下一步 |
 
 ## Human Plan Loop
@@ -51,10 +51,10 @@ loop start 5
   -> 初始化、更新或核查唯一功能基准
 
 /code-cleanup:cleanup [功能 ID 或范围]
-  -> 以 ready 基准持续清理、重构或重写混乱代码
+  -> 全量技术扫描后，以 ready 基准持续执行全部清理批次
 ```
 
-两个过程互不自动调用。功能清单不得包含任何代码或实现信息，但必须完整到让任意 AI 只拿这一个文件就能复刻和验收产品。基准建立后，代码与清单冲突时修代码，不反向修改基准迁就实现。
+两个过程互不自动调用。功能清单不得包含任何代码或实现信息，未指定范围时必须覆盖完整产品，明确指定 CodeBench 等范围时则完整覆盖该范围。cleanup 未另传范围时继承清单范围，先建立逐文件清理计划并达到 100% 扫描覆盖，再连续处理全部候选；删一个文件不能代表系统清理完成。
 
 ## 特色
 

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Cleanup Against Baseline"
-  short_description: "Continuously simplify AI-evolved code without losing features."
-  default_prompt: "Use $cleanup to clean up this implementation while preserving every ready feature in the baseline."
+  display_name: "系统清理代码"
+  short_description: "继承功能基准范围，逐文件扫描并持续治理业务迭代累积的混乱实现"
+  default_prompt: "使用 $cleanup 继承功能清单的声明范围，完成逐文件全量扫描，并持续执行所有清理候选直到门禁满足。"

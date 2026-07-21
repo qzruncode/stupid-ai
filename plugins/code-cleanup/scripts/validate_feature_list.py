@@ -175,13 +175,16 @@ def main() -> int:
             errors.append("ready coverage contains an unresolved marker")
 
     leakage_patterns = {
-        "fenced code block": r"^\s*```",
+        "inline or fenced code formatting": r"`",
+        "source-like statement": r"^\s*(?:import|from|export|const|let|var|def|class|function|interface|type|return)\s+",
+        "code-style identifier": r"\b[a-z][a-z0-9]*_[a-z0-9_]+\b",
         "source-directory path": r"(?:^|[\s`(])(?:src|lib|app|apps|packages)/[\w./-]+",
         "implementation filename": r"\b[\w-]+\.(?:py|ts|tsx|js|jsx|java|go|rs|rb|php|vue|svelte|css|scss|sql)\b",
         "implementation evidence": r"实现证据|源码位置|代码位置|调用链|测试文件|文件路径|函数名|类名|方法名|模块名|组件名|数据库表名|数据库字段|框架名称|依赖包|环境变量",
     }
     for label, pattern in leakage_patterns.items():
-        if re.search(pattern, text, re.MULTILINE):
+        flags = re.MULTILINE | (re.IGNORECASE if label == "source-like statement" else 0)
+        if re.search(pattern, text, flags):
             errors.append(f"possible {label}; keep implementation evidence out of the feature list")
 
     for message in errors:

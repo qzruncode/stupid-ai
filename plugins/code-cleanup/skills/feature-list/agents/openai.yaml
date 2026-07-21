@@ -1,4 +1,4 @@
 interface:
-  display_name: "Maintain Feature List"
-  short_description: "Initialize and update the complete code-free product baseline."
-  default_prompt: "Use $feature-list to initialize, update, or audit the complete code-free functional baseline."
+  display_name: "维护功能清单"
+  short_description: "初始化、更新并核查声明范围内可由任意 AI 复刻的无代码功能基准"
+  default_prompt: "使用 $feature-list 初始化、更新或核查声明产品范围内完整且无代码内容的功能基准。"
